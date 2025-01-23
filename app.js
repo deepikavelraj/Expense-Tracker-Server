@@ -12,7 +12,7 @@ const mongourl= "mongodb://0.0.0.0:27017/demo";
 
 
 mongoose
-.connect(mongourl)
+.connect("mongodb+srv://deepikavel:9787@cluster0.uvxbd.mongodb.net/sample_mflix")
 .then(()=>{
     console.log("Db connected")
     app.listen(PORT,()=>{
@@ -35,26 +35,50 @@ app.get('/api/expense',async(req,res)=>{
     res.json(data)
 })
 
-   
-app.get("/api/expenseById/:_id",async(req,res)=>{
-    const {_id}=req.params;
-    const getid=await expenseModel.findOne({_id});    
-    res.status(200).json(getid)
-})
-app.put('/api/expensesUpdate/:id',async(req,res)=>{
-    const{id}=req.params;
-    const{title,amount}=req.body;
-    const updatedExpenses=await expenseModel.findOneAndUpdate(
+
+app.put("/api/expenses/:id", async(req, res) => {
+    const {id} = req.params;
+    const { title , amount } = req.body;
+    const updatedExpense = await expenseModel.findOneAndUpdate(
         {
-            id:id,
+            id : id,
         },
         {
-            title:title,
-            amount:amount,
+            title: title,
+            amount: amount,
         }
     )
-    res.status(200).json(updatedExpenses);
+    res.status(200).json(updatedExpense);
 })
+
+
+app.delete('/api/expensess/:id' , async(req, res) => {
+    const {id}  = req.params;
+    const deleteExpense =  await expenseModel.findOneAndDelete(id)
+        if(deleteExpense)
+        {
+            res.status(200).json(deleteExpense);
+        }
+})
+   
+
+app.post('/api/expensse',async(req,res) => {
+    const { title, amount } = req.body;
+    const newExpense = new expenseModel( {
+        id: uuidv4(),
+        title: title,
+        amount: amount,
+    });
+    const savedExpense = await newExpense.save();
+    res.status(200).json(savedExpense);
+});
+
+app.get("/api/expenseById/:_id",async(req,res)=>{
+    const {id}=req.params;
+    const getid=await expenseModel.findOne({id});    
+    res.status(200).json(getid)
+})
+
 
 
     // rest api la 9 methods
